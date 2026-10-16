@@ -8,11 +8,12 @@
 
 ## Reading order (isi order me chalna)
 
-1. `package.json` → `types/index.ts` → `app/layout.tsx` → `app/page.tsx`
-2. `store/useStore.ts` (dil yahin hai)
-3. `lib/sendRequest.ts` → `app/api/proxy/route.ts`
-4. `lib/jsonQuery.ts` → `components/JsonTreeViewer.tsx`
-5. Baaki UI components (`RequestPanel`, `ResponsePanel`, drawers) — ye bade hain par concept kam, UI zyada.
+1. `package.json` → `types/index.ts` → `app/globals.css` → `app/layout.tsx` → `app/page.tsx`
+2. `store/useStore.ts` (dil yahin hai — request state, mock endpoints, theme, collections)
+3. `lib/sendRequest.ts` → `app/api/proxy/route.ts` (CORS proxy)
+4. `app/api/mock/[...slug]/route.ts` → `components/MockServerModal.tsx` (In-Browser Mock Server)
+5. `lib/jsonQuery.ts` → `components/JsonTreeViewer.tsx` (Recursion & JSONPath evaluator)
+6. Baaki UI components (`RequestPanel`, `ResponsePanel`, `Navbar`, drawers) — ye bade hain par concept kam, UI zyada.
 
 ---
 
@@ -187,10 +188,58 @@ Next.js pehle server pe HTML banata hai (jahan localStorage hota hi nahi), phir 
 
 ---
 
+## Concept 10 — Next.js Dynamic Catch-All API Routes & In-Browser Mock Server (SUPER COOL FEATURE)
+**Kahan:** `app/api/mock/[...slug]/route.ts`, `components/MockServerModal.tsx`, `store/useStore.ts`
+
+**Kya ho raha hai:**
+- **Dynamic Catch-All Route (`[...slug]`):** Next.js App Router me folder ka naam `[...slug]` hone ka matlab hai ye kisi bhi nested path ko catch kar lega. Jaise:
+  - `/api/mock/users` → `slug = ["users"]`
+  - `/api/mock/cart/checkout` → `slug = ["cart", "checkout"]`
+  - `/api/mock/auth/v1/token` → `slug = ["auth", "v1", "token"]`
+- **Method Dispatch:** Single route file ke andar `GET`, `POST`, `PUT`, `PATCH`, `DELETE` sabhi HTTP handlers exported hain jo ek common `handleMockRequest` function ko call karte hain.
+- **Next.js 15+ Async Params:** Next.js ke naye version me `params` ek Promise hota hai (`const { slug } = await params;`), isko direct synchronous access karne se runtime warning aati hai.
+- **Simulated Latency:** Real-world networks me API instant nahi aati. Isliye `await new Promise((resolve) => setTimeout(resolve, mock.delayMs));` lagaya hai. Isse frontend ke loader/spinners aur timeout handling test ho sakti hai.
+- **Dynamic Status Codes:** Frontend developer custom errors test kar sake (200, 201, 400, 401, 404, 500) — server `new NextResponse(body, { status: mock.statusCode })` return karta hai.
+- **Cross-Request Mock Synchronization:** Browser client aur server-side runtime ke beech mock configuration synchronize hoti hai (`/api/mock/sync`).
+
+**Kya seekhna hai:**
+- Next.js dynamic routing: `[slug]` (single param) vs `[...slug]` (catch-all) vs `[[...slug]]` (optional catch-all).
+- Mocking ka real-life use-case: jab backend team ne API abhi deploy nahi ki, par frontend team ko UI aur error-states pehle hi test karni hain.
+- `NextResponse` me custom status codes, headers aur body bhejna.
+
+**Interview angle:** "Agar backend API ready na ho to frontend development kaise karte ho?" → "Humne Next.js App Router ke `[...slug]` catch-all API route ka use karke ek in-app Mock Server banaya, jisme method, route, custom status code aur artificial latency delay configure karke realistic error/success scenarios test kiye."
+
+---
+
+## Concept 11 — Tailwind CSS v4 Theme Architecture, `@custom-variant` & Specificity
+**Kahan:** `app/globals.css`, `app/page.tsx`, `app/layout.tsx`, `components/Navbar.tsx`
+
+**Kya ho raha hai:**
+- **Tailwind v4 CSS-First Approach:** Tailwind CSS v4 me `tailwind.config.js` file nahi hoti. Saari configuration seedhe `app/globals.css` me CSS directives se hoti hai.
+- **`@custom-variant` Directive:** By default Tailwind v4 dark mode ke liye OS preference (`@media (prefers-color-scheme: dark)`) sunta hai. Manual Sun/Moon button se switch karne ke liye humne class-based selector define kiya:
+  ```css
+  @custom-variant dark (&:where(.dark, .dark *));
+  ```
+  Is line ka matlab hai: agar kisi ancestor element (jaise `<html>`) par `.dark` class lagi ho, to uske andar ke sabhi elements par `dark:...` utility classes activate ho jayein!
+- **CSS Specificity Trap:** Agar aap kisi container par plain `bg-zinc-950` laga dete ho bina `dark:` prefix ke, to chahe `<html>` se `.dark` class hat bhi jaye, background dark hi rahega! Solution: hamesha dual classes use karo:
+  ```tsx
+  className="bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 border-zinc-200 dark:border-zinc-800"
+  ```
+- **Root Element Sync:** `app/page.tsx` me `useEffect` Zustand store ke `theme` state ko sunta hai aur `document.documentElement.classList.add/remove("dark")` karta hai.
+- **Smooth Transition:** `app/globals.css` me `body` par `transition: background-color 0.2s ease, color 0.2s ease` lagayi hai jisse theme instantly jhatke se switch hone ki jagah buttery-smooth fade hoti hai.
+
+**Kya seekhna hai:**
+- Tailwind v3 (`darkMode: 'class'`) vs Tailwind v4 (`@custom-variant dark`).
+- CSS cascade aur specificity — hardcoded utilities vs theme-aware variants.
+- Dark mode state sync: Zustand → localStorage persist → DOM classList manipulation.
+
+**Interview angle:** "Tailwind CSS v4 me dark mode toggle kaise implement kiya aur purane versions se kya alag hai?" → Tailwind v4 me JS config ki jagah CSS-first `@custom-variant dark` use hota hai, aur SSR hydration mismatch se bachne ke liye `suppressHydrationWarning` ke saath DOM sync kiya jata hai.
+
+---
+
 ## Ek flow end-to-end trace karo (sabse tezi se samajhne ka tareeka)
 
-"Jab user Send dabata hai tab kya hota hai?" — isko file-by-file follow karo:
-
+### Flow 1: "Jab user Send dabata hai tab kya hota hai?"
 1. `page.tsx` — `Cmd+Enter` ya RequestPanel ka Send button → `sendRequest()` (store se).
 2. `store/useStore.ts` → `sendRequest` action → `isLoading: true` → `executeRequest(config)` call.
 3. `lib/sendRequest.ts` → `executeRequest` → proxy on hai to `/api/proxy`, warna direct `fetch`. Timing + error handling.
@@ -199,22 +248,34 @@ Next.js pehle server pe HTML banata hai (jahan localStorage hota hi nahi), phir 
 6. `ResponsePanel.tsx` re-render → `JsonTreeViewer` ko `response.data` deta hai.
 7. `JsonTreeViewer.tsx` → recursion se tree render.
 
-Ye ek flow samajh gaye to **80% app** samajh gaye — baaki sab isi pattern ke variations hain.
+### Flow 2: "Jab user Mock Endpoint banata aur test karta hai tab kya hota hai?"
+1. Top bar me "Mock Server" button click → `MockServerModal.tsx` open hota hai.
+2. User form bharta hai (Method: `POST`, Path: `cart/checkout`, Status: `500`, Latency: `1200ms`, Body: JSON).
+3. "Create Mock Route" dabane par `addMock()` action store me mock add karta hai (localStorage me save).
+4. List me "Test" button dabane par address bar me automatically URL set hoti hai: `http://localhost:3000/api/mock/cart/checkout`.
+5. "Send" dabate hi request `app/api/mock/[...slug]/route.ts` ke `POST` handler ko jati hai.
+6. Server path (`slug = ["cart", "checkout"]`) match karta hai, `1200ms` wait karta hai, aur status code `500` return karta hai.
+7. Right panel me turant Amber/Rose color ka Client/Server Error badge, 1200ms latency aur JSON response render ho jata hai.
+
+Ye 2 flows samajh gaye to **90% app ka flow** clear hai!
 
 ---
 
 ## Priority order (agar time kam hai)
 
-Zaroor samjho (interview me aayega):
+Zaroor samjho (interview me pakka aayega):
 1. Server vs Client components (Concept 2)
-2. Hydration + persist (Concept 4)
-3. CORS + proxy (Concept 6)
-4. Recursion / tree rendering (Concept 7)
+2. In-Browser Mock Server & `[...slug]` Catch-All Routes (Concept 10)
+3. Hydration + persist (Concept 4)
+4. CORS + Server Proxy (Concept 6)
+5. Recursion / tree rendering (Concept 7)
+6. Tailwind v4 Dark/Light Theme Architecture (Concept 11)
 
 Accha-to-know:
-5. Error categorization (Concept 5)
-6. Zustand immutability (Concept 3)
-7. Blob download / clipboard (Concept 8)
+7. Error categorization (Concept 5)
+8. Zustand immutability (Concept 3)
+9. Blob download / clipboard (Concept 8)
+10. Controlled inputs & dynamic list rendering (Concept 9)
 
 ---
 
@@ -226,3 +287,4 @@ Accha-to-know:
 - Har concept ke "interview angle" ka jawab **bolkar** practice karo, jaise interviewer saamne hai.
 
 Jab ye sab ho jaye, tum bina atke 5 min me pura project samjha paoge — aur tabhi ye project "AI ne banaya" se "maine banaya aur samajhta hoon" ban jayega.
+
