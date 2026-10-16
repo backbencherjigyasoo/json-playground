@@ -1,4 +1,4 @@
-import { RequestConfig, ResponseData } from "@/types";
+import { RequestConfig, ResponseData, MockEndpoint } from "@/types";
 
 /**
  * Builds full URL by combining base URL and enabled query parameters
@@ -6,7 +6,8 @@ import { RequestConfig, ResponseData } from "@/types";
 export function buildUrlWithParams(baseUrl: string, queryParams: RequestConfig["queryParams"]): string {
   if (!baseUrl.trim()) return "";
   try {
-    const url = new URL(baseUrl);
+    const baseOrigin = typeof window !== "undefined" ? window.location.origin : "http://localhost:3000";
+    const url = new URL(baseUrl, baseOrigin);
     const enabledParams = queryParams.filter((p) => p.enabled && p.key.trim().length > 0);
 
     for (const p of enabledParams) {
@@ -62,20 +63,85 @@ export function resolveHeaders(config: RequestConfig): Record<string, string> {
 }
 
 /**
- * Executes the HTTP request either directly from the browser or via the Next.js CORS proxy
+ * Executes the HTTP request either directly from the browser, via in-browser mock interceptor, or via the Next.js CORS proxy
  */
-export async function executeRequest(config: RequestConfig): Promise<ResponseData> {
+export async function executeRequest(
+  config: RequestConfig,
+  mockEndpoints: MockEndpoint[] = []
+): Promise<ResponseData> {
   const fullUrl = buildUrlWithParams(config.url, config.queryParams);
 
   if (!fullUrl) {
     throw new Error("URL cannot be empty");
   }
 
-  // Validate URL format
+  // Validate URL format (support relative paths like /api/mock/...)
+  const baseOrigin = typeof window !== "undefined" ? window.location.origin : "http://localhost:3000";
+  let parsedUrl: URL;
   try {
-    new URL(fullUrl);
+    parsedUrl = new URL(fullUrl, baseOrigin);
   } catch {
     throw new Error("Please enter a valid URL (including https:// or http://)");
+  }
+
+  // 1. Check if this request matches any active client-side mock endpoint
+  if (mockEndpoints && mockEndpoints.length > 0) {
+    const pathname = parsedUrl.pathname.toLowerCase();
+    const matchedMock = mockEndpoints.find((m) => {
+      if (!m.enabled || m.method.toUpperCase() !== config.method.toUpperCase()) return false;
+      const cleanMockPath = m.path.replace(/^\/+/, "").toLowerCase();
+      return (
+        pathname === `/api/mock/${cleanMockPath}` ||
+        pathname === `/${cleanMockPath}` ||
+        pathname.endsWith(`/${cleanMockPath}`)
+      );
+    });
+
+    if (matchedMock) {
+      const startTime = performance.now();
+      if (matchedMock.delayMs > 0) {
+        await new Promise((resolve) => setTimeout(resolve, matchedMock.delayMs));
+      }
+      const endTime = performance.now();
+      const timeMs = Math.round(endTime - startTime);
+
+      let parsedData = null;
+      let isJson = false;
+      try {
+        parsedData = JSON.parse(matchedMock.responseBody);
+        isJson = true;
+      } catch {
+        isJson = false;
+      }
+
+      const mockHeaders: Record<string, string> = {
+        "content-type": "application/json",
+        "x-mock-engine": "API-Lens In-Browser Mocker",
+        "x-mock-delay": `${matchedMock.delayMs}ms`,
+      };
+
+      for (const h of matchedMock.headers || []) {
+        if (h.enabled && h.key) {
+          mockHeaders[h.key.toLowerCase()] = h.value;
+        }
+      }
+
+      const rawBody = matchedMock.responseBody;
+      const sizeBytes = new Blob([rawBody]).size;
+
+      return {
+        status: matchedMock.statusCode || 200,
+        statusText: matchedMock.statusCode >= 400 ? "Mock Error" : "Mock OK",
+        timeMs,
+        sizeBytes,
+        headers: mockHeaders,
+        data: parsedData,
+        rawBody,
+        isJson,
+        isProxy: false,
+        timestamp: Date.now(),
+      };
+    }
   }
 
   const resolvedHeaders = resolveHeaders(config);

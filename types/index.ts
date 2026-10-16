@@ -76,3 +76,16 @@ export interface ApiPreset {
   headers?: KeyValuePair[];
   bodyContent?: string;
 }
+
+export interface MockEndpoint {
+  id: string;
+  name: string;
+  method: HttpMethod;
+  path: string; // e.g. "/users" or "/auth/login"
+  statusCode: number; // 200, 201, 400, 404, 500
+  delayMs: number; // 0, 300, 800, 1500, 3000
+  responseBody: string; // JSON payload
+  headers: KeyValuePair[];
+  enabled: boolean;
+  createdAt: number;
+}

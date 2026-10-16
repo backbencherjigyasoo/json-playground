@@ -9,6 +9,7 @@ import {
   SavedCollection,
   ApiPreset,
   AuthConfig,
+  MockEndpoint,
 } from "@/types";
 import { executeRequest } from "@/lib/sendRequest";
 
@@ -73,6 +74,74 @@ export const API_PRESETS: ApiPreset[] = [
   },
 ];
 
+export const DEFAULT_MOCKS: MockEndpoint[] = [
+  {
+    id: "mock-1",
+    name: "Get Users List",
+    method: "GET",
+    path: "users",
+    statusCode: 200,
+    delayMs: 300,
+    headers: [{ id: "h1", key: "Content-Type", value: "application/json", enabled: true }],
+    enabled: true,
+    createdAt: Date.now(),
+    responseBody: JSON.stringify(
+      {
+        status: "success",
+        total: 3,
+        users: [
+          { id: 1, name: "Aarav Sharma", email: "aarav@example.com", role: "Frontend Lead" },
+          { id: 2, name: "Priya Patel", email: "priya@example.com", role: "Product Designer" },
+          { id: 3, name: "Rohan Verma", email: "rohan@example.com", role: "DevOps Engineer" },
+        ],
+      },
+      null,
+      2
+    ),
+  },
+  {
+    id: "mock-2",
+    name: "User Authentication",
+    method: "POST",
+    path: "auth/login",
+    statusCode: 200,
+    delayMs: 600,
+    headers: [{ id: "h1", key: "Content-Type", value: "application/json", enabled: true }],
+    enabled: true,
+    createdAt: Date.now(),
+    responseBody: JSON.stringify(
+      {
+        success: true,
+        message: "Authentication successful",
+        token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.api_lens_mock_token_sample",
+        user: { id: 1, name: "Aarav Sharma", email: "aarav@example.com" },
+      },
+      null,
+      2
+    ),
+  },
+  {
+    id: "mock-3",
+    name: "Checkout 500 Failure",
+    method: "POST",
+    path: "cart/checkout",
+    statusCode: 500,
+    delayMs: 1200,
+    headers: [{ id: "h1", key: "Content-Type", value: "application/json", enabled: true }],
+    enabled: true,
+    createdAt: Date.now(),
+    responseBody: JSON.stringify(
+      {
+        error: "Internal Server Error",
+        code: "PAYMENT_GATEWAY_TIMEOUT",
+        message: "Simulated payment service timeout for error-state UI testing.",
+      },
+      null,
+      2
+    ),
+  },
+];
+
 interface PlaygroundState {
   // Active Request
   method: HttpMethod;
@@ -98,6 +167,10 @@ interface PlaygroundState {
   isHistoryOpen: boolean;
   isSaveModalOpen: boolean;
 
+  // Mock Server
+  mocks: MockEndpoint[];
+  isMockModalOpen: boolean;
+
   // Settings
   theme: "dark" | "light";
   isHydrated: boolean;
@@ -114,6 +187,14 @@ interface PlaygroundState {
   toggleTheme: () => void;
   setHistoryOpen: (open: boolean) => void;
   setSaveModalOpen: (open: boolean) => void;
+  setMockModalOpen: (open: boolean) => void;
+
+  // Mock Server Actions
+  addMock: (mock: Omit<MockEndpoint, "id" | "createdAt">) => void;
+  updateMock: (id: string, updates: Partial<MockEndpoint>) => void;
+  deleteMock: (id: string) => void;
+  toggleMock: (id: string) => void;
+  testMockInPlayground: (mock: MockEndpoint) => void;
 
   // Query Params Actions
   addQueryParam: () => void;
@@ -207,6 +288,10 @@ export const useStore = create<PlaygroundState>()(
       isHistoryOpen: false,
       isSaveModalOpen: false,
 
+      // Mock Server Defaults
+      mocks: DEFAULT_MOCKS,
+      isMockModalOpen: false,
+
       // Settings
       theme: "dark",
       isHydrated: false,
@@ -226,6 +311,89 @@ export const useStore = create<PlaygroundState>()(
       toggleTheme: () => set((state) => ({ theme: state.theme === "dark" ? "light" : "dark" })),
       setHistoryOpen: (isHistoryOpen) => set({ isHistoryOpen }),
       setSaveModalOpen: (isSaveModalOpen) => set({ isSaveModalOpen }),
+      setMockModalOpen: (isMockModalOpen) => set({ isMockModalOpen }),
+
+      // Mock Server Actions
+      addMock: (newMock) => {
+        const item: MockEndpoint = {
+          ...newMock,
+          id: "mock-" + Date.now(),
+          createdAt: Date.now(),
+        };
+        set((s) => {
+          const updated = [item, ...s.mocks];
+          if (typeof window !== "undefined") {
+            fetch("/api/mock/sync", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ mocks: updated }),
+            }).catch(() => {});
+          }
+          return { mocks: updated };
+        });
+      },
+
+      updateMock: (id, updates) => {
+        set((s) => {
+          const updated = s.mocks.map((m) => (m.id === id ? { ...m, ...updates } : m));
+          if (typeof window !== "undefined") {
+            fetch("/api/mock/sync", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ mocks: updated }),
+            }).catch(() => {});
+          }
+          return { mocks: updated };
+        });
+      },
+
+      deleteMock: (id) => {
+        set((s) => {
+          const updated = s.mocks.filter((m) => m.id !== id);
+          if (typeof window !== "undefined") {
+            fetch("/api/mock/sync", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ mocks: updated }),
+            }).catch(() => {});
+          }
+          return { mocks: updated };
+        });
+      },
+
+      toggleMock: (id) => {
+        set((s) => {
+          const updated = s.mocks.map((m) => (m.id === id ? { ...m, enabled: !m.enabled } : m));
+          if (typeof window !== "undefined") {
+            fetch("/api/mock/sync", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ mocks: updated }),
+            }).catch(() => {});
+          }
+          return { mocks: updated };
+        });
+      },
+
+      testMockInPlayground: (mock) => {
+        const cleanPath = mock.path.replace(/^\/+/, "");
+        set({
+          method: mock.method,
+          url: `/api/mock/${cleanPath}`,
+          queryParams: [{ id: "qp-1", key: "", value: "", enabled: true }],
+          headers:
+            mock.headers && mock.headers.length > 0
+              ? mock.headers
+              : [{ id: "hd-1", key: "Accept", value: "application/json", enabled: true }],
+          bodyContent: mock.method !== "GET" ? mock.responseBody : "",
+          bodyType: mock.method !== "GET" ? "json" : "none",
+          requestTab: "params",
+          isMockModalOpen: false,
+        });
+        setTimeout(() => {
+          get().sendRequest();
+        }, 50);
+      },
 
       // Sync URL query params with the key-value table
       syncUrlWithParams: (newUrl: string) => {
@@ -356,7 +524,7 @@ export const useStore = create<PlaygroundState>()(
         };
 
         try {
-          const res = await executeRequest(requestConfig);
+          const res = await executeRequest(requestConfig, state.mocks);
           set({ response: res, isLoading: false });
 
           // Add to history
@@ -526,6 +694,7 @@ export const useStore = create<PlaygroundState>()(
         collections: state.collections,
         theme: state.theme,
         useProxy: state.useProxy,
+        mocks: state.mocks,
       }),
       onRehydrateStorage: () => (state) => {
         state?.setHydrated(true);

@@ -6,6 +6,7 @@ import { RequestPanel } from "@/components/RequestPanel";
 import { ResponsePanel } from "@/components/ResponsePanel";
 import { HistoryDrawer } from "@/components/HistoryDrawer";
 import { CollectionsModal } from "@/components/CollectionsModal";
+import { MockServerModal } from "@/components/MockServerModal";
 import { useStore } from "@/store/useStore";
 
 export default function Home() {
@@ -57,6 +58,7 @@ export default function Home() {
       {/* Slide-over Drawers & Modals */}
       <HistoryDrawer />
       <CollectionsModal />
+      <MockServerModal />
     </div>
   );
 }

@@ -13,6 +13,7 @@ import {
   Sparkles,
   Command,
   Send,
+  Server,
 } from "lucide-react";
 import { useStore, API_PRESETS } from "@/store/useStore";
 
@@ -22,8 +23,10 @@ export const Navbar: React.FC = () => {
     toggleTheme,
     history,
     collections,
+    mocks,
     setHistoryOpen,
     setSaveModalOpen,
+    setMockModalOpen,
     useProxy,
     setUseProxy,
     loadPreset,
@@ -108,6 +111,20 @@ export const Navbar: React.FC = () => {
               </>
             )}
           </div>
+
+          {/* Mock Server Button */}
+          <button
+            onClick={() => setMockModalOpen(true)}
+            className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold text-emerald-400 hover:text-white bg-emerald-950/40 hover:bg-emerald-900/60 rounded-md border border-emerald-800/60 transition-all shadow-sm"
+            title="Create & simulate mock API endpoints"
+          >
+            <Server className="w-3.5 h-3.5 text-emerald-400" />
+            <span className="hidden sm:inline">Mock Server</span>
+            <span className="sm:hidden">Mocks</span>
+            <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-300 px-1 text-[10px] font-mono">
+              {mocks.length}
+            </span>
+          </button>
         </div>
 
         {/* Center / Mode indicator */}

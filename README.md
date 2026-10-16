@@ -56,7 +56,14 @@
 - **Import / Export:** Export history as JSON or import backup sessions.
 - **Saved Collections:** Organize endpoints into custom collections (e.g., "E-Commerce APIs", "Auth Tests").
 
-### 7. 🎨 Developer-First Aesthetic & Theming
+### 7. 🎭 In-Browser API Mock Server & Endpoint Engine
+- **Custom Mock Route Creator:** Define mock endpoints with custom HTTP methods (`GET`, `POST`, `PUT`, `DELETE`), paths (e.g., `/users`, `/auth/login`, `/cart/checkout`), and response payloads.
+- **Configurable Status Codes:** Simulate success (`200 OK`, `201 Created`) or failure states (`400 Bad Request`, `404 Not Found`, `500 Server Error`).
+- **Simulated Latency & Delay:** Emulate network latency (`0ms`, `300ms`, `800ms`, `1500ms`, `3000ms`) to test frontend loading spinners and skeletons.
+- **Live Shareable Endpoints:** Exposes real Next.js API routes (`/api/mock/[path]`) that can be consumed by external frontend or mobile applications.
+- **1-Click Testing:** Instant "Test in Playground" execution with bi-directional syncing.
+
+### 8. 🎨 Developer-First Aesthetic & Theming
 - Sleek dark mode tuned for high contrast and readability.
 - Seamless Dark / Light theme toggle.
 
@@ -70,6 +77,7 @@ Pre-configured in the top **Presets** dropdown for instant testing:
 4. `GET https://pokeapi.co/api/v2/pokemon/ditto` — Deeply nested Pokémon tree (abilities, stats, moves)
 5. `POST https://jsonplaceholder.typicode.com/posts` — Mutation test with JSON payload
 6. `GET https://httpbin.org/headers` — Request header reflection
+7. `GET /api/mock/users` — Live Mock Server endpoint with simulated 300ms latency
 
 ---
 
@@ -79,36 +87,41 @@ Pre-configured in the top **Presets** dropdown for instant testing:
 json-playground/
 ├── app/
 │   ├── api/
+│   │   ├── mock/
+│   │   │   ├── [...slug]/route.ts  # Catch-all dynamic mock server with latency & status codes
+│   │   │   └── sync/route.ts       # Client-to-server mock state synchronization
 │   │   └── proxy/
-│   │       └── route.ts         # Server-side proxy bypassing browser CORS
-│   ├── globals.css              # Design tokens, custom scrollbars, Tailwind v4
-│   ├── layout.tsx               # Root layout, Geist font, meta tags
-│   └── page.tsx                 # Responsive two-panel playground layout
+│   │       └── route.ts            # Server-side proxy bypassing browser CORS
+│   ├── globals.css                 # Design tokens, custom scrollbars, Tailwind v4
+│   ├── layout.tsx                  # Root layout, Geist font, meta tags
+│   └── page.tsx                    # Responsive two-panel playground layout
 ├── components/
-│   ├── Navbar.tsx               # Top branding, preset picker, proxy toggle, theme
-│   ├── RequestPanel.tsx         # HTTP method, URL, params, headers, body editor
-│   ├── ResponsePanel.tsx        # Status, latency, size, search, and view tabs
-│   ├── JsonTreeViewer.tsx       # Recursive collapsible tree with path-copy & highlighting
-│   ├── HistoryDrawer.tsx        # LocalStorage request history with import/export
-│   └── CollectionsModal.tsx     # Custom collections and saved request templates
+│   ├── Navbar.tsx                  # Top branding, preset picker, mock server, theme
+│   ├── RequestPanel.tsx            # HTTP method, URL, params, headers, body editor
+│   ├── ResponsePanel.tsx           # Status, latency, size, search, and view tabs
+│   ├── JsonTreeViewer.tsx          # Recursive collapsible tree with path-copy & highlighting
+│   ├── MockServerModal.tsx         # Full-featured API mocking modal and endpoint builder
+│   ├── HistoryDrawer.tsx           # LocalStorage request history with import/export
+│   └── CollectionsModal.tsx        # Custom collections and saved request templates
 ├── lib/
-│   ├── sendRequest.ts           # URL builder, headers resolver, fetch & error categorizer
-│   └── jsonQuery.ts             # JSONPath evaluator, text highlighter, export utilities
+│   ├── sendRequest.ts              # URL builder, headers resolver, mock interceptor, fetch wrapper
+│   └── jsonQuery.ts                # JSONPath evaluator, text highlighter, export utilities
 ├── store/
-│   └── useStore.ts              # Zustand global store with localStorage persistence
+│   └── useStore.ts                 # Zustand global store with localStorage persistence
 └── types/
-    └── index.ts                 # Strongly-typed HTTP interfaces and models
+    └── index.ts                    # Strongly-typed HTTP interfaces and models
 ```
 
 ---
 
 ## 💡 Engineering & Interview Talking Points
 
+- **Dual-Layer API Mocking Engine:** Rather than only mocking responses in client memory, API Lens implements both a client-side interceptor (for zero-latency playground inspection) and a server-side catch-all App Router handler (`/api/mock/[...slug]`) with `setTimeout` delay emulation and CORS headers. Any external application can hit these live endpoints during frontend development.
 - **Custom Request Wrapper & Error Categorization:** Rather than a raw `fetch()`, requests pass through an orchestration layer that measures high-resolution timing (`performance.now()`), calculates payload sizes via Blob lengths, and differentiates between Network/CORS errors, HTTP error statuses, and JSON parse failures.
 - **Overcoming CORS via Next.js Proxy:** Direct browser requests to strict APIs fail due to CORS. Rather than failing silently, the client detects CORS patterns and allows switching to a server-side Next.js route handler (`/api/proxy`), ensuring any API can be explored.
 - **Building a Recursive JSON Tree from Scratch:** Instead of relying on third-party packages, we engineered a performant recursive React component with collapsible branches, breadcrumb path computation, and search term highlight markers.
 - **Bi-directional Query Param Syncing:** Modifying query params in the table updates the URL search query, and vice-versa, adhering to standard URL standards.
-- **State Management & Persistence:** Built with Zustand and `localStorage` persistence, ensuring history and custom collections remain preserved across refreshes.
+- **State Management & Persistence:** Built with Zustand and `localStorage` persistence, ensuring history, custom collections, and mock endpoints remain preserved across refreshes.
 
 ---
 
