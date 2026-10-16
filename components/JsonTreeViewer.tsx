@@ -29,7 +29,7 @@ function HighlightText({ text, query }: { text: string; query?: string }) {
         part.toLowerCase() === query.toLowerCase() ? (
           <mark
             key={i}
-            className="bg-amber-400/30 text-amber-200 px-0.5 rounded border border-amber-500/40"
+            className="bg-amber-300/60 dark:bg-amber-400/30 text-amber-900 dark:text-amber-200 px-0.5 rounded border border-amber-400 dark:border-amber-500/40"
           >
             {part}
           </mark>
@@ -100,23 +100,23 @@ const TreeNode: React.FC<TreeNodeProps> = ({
     let typeBadge = "";
 
     if (value === null) {
-      valueElement = <span className="text-zinc-500 italic">null</span>;
+      valueElement = <span className="text-zinc-400 dark:text-zinc-500 italic">null</span>;
       typeBadge = "null";
     } else if (typeof value === "boolean") {
       valueElement = (
-        <span className="text-purple-400 font-medium">{value ? "true" : "false"}</span>
+        <span className="text-purple-600 dark:text-purple-400 font-medium">{value ? "true" : "false"}</span>
       );
       typeBadge = "bool";
     } else if (typeof value === "number") {
       valueElement = (
-        <span className="text-sky-400 font-mono">
+        <span className="text-sky-600 dark:text-sky-400 font-mono">
           <HighlightText text={String(value)} query={searchTerm} />
         </span>
       );
       typeBadge = "num";
     } else {
       valueElement = (
-        <span className="text-emerald-400 font-mono">
+        <span className="text-emerald-700 dark:text-emerald-400 font-mono">
           &quot;<HighlightText text={String(value)} query={searchTerm} />&quot;
         </span>
       );
@@ -125,38 +125,38 @@ const TreeNode: React.FC<TreeNodeProps> = ({
 
     return (
       <div
-        className={`group relative flex items-baseline gap-1.5 py-0.5 px-1.5 rounded transition-colors hover:bg-zinc-800/40 text-[13px] font-mono ${
+        className={`group relative flex items-baseline gap-1.5 py-0.5 px-1.5 rounded transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800/40 text-[13px] font-mono ${
           matchesSearch ? "bg-amber-500/10 border-l-2 border-amber-400" : ""
         }`}
         style={{ paddingLeft: `${depth * 18 + 20}px` }}
       >
         {keyName !== undefined && (
-          <span className="text-sky-300 select-none">
+          <span className="text-sky-600 dark:text-sky-300 select-none">
             &quot;<HighlightText text={keyName} query={searchTerm} />&quot;:
           </span>
         )}
         <span className="break-all">{valueElement}</span>
-        {!isLast && <span className="text-zinc-500">,</span>}
+        {!isLast && <span className="text-zinc-400 dark:text-zinc-500">,</span>}
 
         {/* Hover action badges */}
-        <div className="opacity-0 group-hover:opacity-100 transition-opacity ml-auto pl-2 flex items-center gap-1.5 text-[11px] text-zinc-400">
-          <span className="text-[10px] px-1 py-0.2 bg-zinc-800 text-zinc-400 rounded border border-zinc-700/50">
+        <div className="opacity-0 group-hover:opacity-100 transition-opacity ml-auto pl-2 flex items-center gap-1.5 text-[11px] text-zinc-500 dark:text-zinc-400">
+          <span className="text-[10px] px-1 py-0.2 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 rounded border border-zinc-200 dark:border-zinc-700/50">
             {typeBadge}
           </span>
           <button
             onClick={handleCopyPath}
             title={`Copy path: ${path}`}
-            className="hover:text-white px-1 py-0.5 rounded hover:bg-zinc-750 flex items-center gap-0.5 text-[10px]"
+            className="hover:text-zinc-900 dark:hover:text-white px-1 py-0.5 rounded hover:bg-zinc-200 dark:hover:bg-zinc-750 flex items-center gap-0.5 text-[10px]"
           >
-            {copiedPath ? <Check className="w-3 h-3 text-emerald-400" /> : <Tag className="w-3 h-3" />}
+            {copiedPath ? <Check className="w-3 h-3 text-emerald-500 dark:text-emerald-400" /> : <Tag className="w-3 h-3" />}
             <span>path</span>
           </button>
           <button
             onClick={handleCopyVal}
             title="Copy value"
-            className="hover:text-white px-1 py-0.5 rounded hover:bg-zinc-750 flex items-center gap-0.5 text-[10px]"
+            className="hover:text-zinc-900 dark:hover:text-white px-1 py-0.5 rounded hover:bg-zinc-200 dark:hover:bg-zinc-750 flex items-center gap-0.5 text-[10px]"
           >
-            {copiedVal ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+            {copiedVal ? <Check className="w-3 h-3 text-emerald-500 dark:text-emerald-400" /> : <Copy className="w-3 h-3" />}
           </button>
         </div>
       </div>
@@ -177,7 +177,7 @@ const TreeNode: React.FC<TreeNodeProps> = ({
       {/* Node Header Row */}
       <div
         onClick={() => setIsOpen(!isOpen)}
-        className={`group relative flex items-center gap-1 py-0.5 px-1.5 rounded cursor-pointer transition-colors hover:bg-zinc-800/40 ${
+        className={`group relative flex items-center gap-1 py-0.5 px-1.5 rounded cursor-pointer transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800/40 ${
           matchesSearch ? "bg-amber-500/10 border-l-2 border-amber-400" : ""
         }`}
         style={{ paddingLeft: `${depth * 18 + 4}px` }}
@@ -185,88 +185,88 @@ const TreeNode: React.FC<TreeNodeProps> = ({
         {/* Toggle Button */}
         <button
           type="button"
-          className="w-4 h-4 flex items-center justify-center text-zinc-400 hover:text-white rounded"
+          className="w-4 h-4 flex items-center justify-center text-zinc-400 hover:text-zinc-800 dark:hover:text-white rounded"
         >
           {isOpen ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
         </button>
 
         {/* Key Name if object property */}
         {keyName !== undefined && (
-          <span className="text-sky-300 font-medium">
+          <span className="text-sky-600 dark:text-sky-300 font-medium">
             &quot;<HighlightText text={keyName} query={searchTerm} />&quot;:
           </span>
         )}
 
         {/* Opener bracket or collapsed summary */}
-        <span className="text-zinc-400">{opener}</span>
+        <span className="text-zinc-500 dark:text-zinc-400">{opener}</span>
 
         {!isOpen && (
-          <span className="text-xs text-zinc-400 bg-zinc-800/80 px-1.5 py-0.5 rounded border border-zinc-700/40 mx-1 flex items-center gap-1">
-            {isArray ? <Brackets className="w-3 h-3 text-cyan-400" /> : <Braces className="w-3 h-3 text-amber-400" />}
+          <span className="text-xs text-zinc-600 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-800/80 px-1.5 py-0.5 rounded border border-zinc-200 dark:border-zinc-700/40 mx-1 flex items-center gap-1">
+            {isArray ? <Brackets className="w-3 h-3 text-cyan-500 dark:text-cyan-400" /> : <Braces className="w-3 h-3 text-amber-500 dark:text-amber-400" />}
             {count} {isArray ? (count === 1 ? "item" : "items") : count === 1 ? "key" : "keys"}
           </span>
         )}
 
-        {!isOpen && <span className="text-zinc-400">{closer}</span>}
-        {!isOpen && !isLast && <span className="text-zinc-500">,</span>}
+        {!isOpen && <span className="text-zinc-500 dark:text-zinc-400">{closer}</span>}
+        {!isOpen && !isLast && <span className="text-zinc-400 dark:text-zinc-500">,</span>}
 
         {/* Hover action badges */}
-        <div className="opacity-0 group-hover:opacity-100 transition-opacity ml-auto pl-2 flex items-center gap-1.5 text-[11px] text-zinc-400">
-          <span className="text-[10px] px-1 py-0.2 bg-zinc-800 text-zinc-400 rounded border border-zinc-700/50">
+        <div className="opacity-0 group-hover:opacity-100 transition-opacity ml-auto pl-2 flex items-center gap-1.5 text-[11px] text-zinc-500 dark:text-zinc-400">
+          <span className="text-[10px] px-1 py-0.2 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 rounded border border-zinc-200 dark:border-zinc-700/50">
             {isArray ? `Array(${count})` : `Object(${count})`}
           </span>
           <button
             onClick={handleCopyPath}
             title={`Copy path: ${path}`}
-            className="hover:text-white px-1 py-0.5 rounded hover:bg-zinc-750 flex items-center gap-0.5 text-[10px]"
+            className="hover:text-zinc-900 dark:hover:text-white px-1 py-0.5 rounded hover:bg-zinc-200 dark:hover:bg-zinc-750 flex items-center gap-0.5 text-[10px]"
           >
-            {copiedPath ? <Check className="w-3 h-3 text-emerald-400" /> : <Tag className="w-3 h-3" />}
+            {copiedPath ? <Check className="w-3 h-3 text-emerald-500 dark:text-emerald-400" /> : <Tag className="w-3 h-3" />}
             <span>path</span>
           </button>
           <button
             onClick={handleCopyVal}
             title="Copy as JSON"
-            className="hover:text-white px-1 py-0.5 rounded hover:bg-zinc-750 flex items-center gap-0.5 text-[10px]"
+            className="hover:text-zinc-900 dark:hover:text-white px-1 py-0.5 rounded hover:bg-zinc-200 dark:hover:bg-zinc-750 flex items-center gap-0.5 text-[10px]"
           >
-            {copiedVal ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+            {copiedVal ? <Check className="w-3 h-3 text-emerald-500 dark:text-emerald-400" /> : <Copy className="w-3 h-3" />}
           </button>
         </div>
       </div>
 
       {/* Children list when open */}
-      {isOpen && (
-        <div className="relative border-l border-zinc-800/80 ml-2">
-          {entries.map((entry: any, index: number) => {
-            const childPath = isArray
-              ? `${path}[${entry.key}]`
-              : path
-              ? `${path}.${entry.key}`
-              : entry.key;
+      <div className="relative border-l border-zinc-200 dark:border-zinc-800/80 ml-2">
+        {isOpen && entries.map((entry: any, index: number) => {
+          const childPath = isArray
+            ? `${path}[${entry.key}]`
+            : path
+            ? `${path}.${entry.key}`
+            : entry.key;
 
-            return (
-              <TreeNode
-                key={entry.key}
-                keyName={isArray ? undefined : entry.key}
-                value={entry.val}
-                path={childPath}
-                searchTerm={searchTerm}
-                depth={depth + 1}
-                isLast={index === entries.length - 1}
-                forceExpand={forceExpand}
-              />
-            );
-          })}
+          return (
+            <TreeNode
+              key={entry.key}
+              keyName={isArray ? undefined : entry.key}
+              value={entry.val}
+              path={childPath}
+              searchTerm={searchTerm}
+              depth={depth + 1}
+              isLast={index === entries.length - 1}
+              forceExpand={forceExpand}
+            />
+          );
+        })}
 
-          {/* Closing Bracket Row */}
+        {/* Closing Bracket Row */}
+        {isOpen && (
           <div
-            className="text-zinc-400 py-0.5"
+            className="text-zinc-500 dark:text-zinc-400 py-0.5"
             style={{ paddingLeft: `${depth * 18 + 20}px` }}
           >
             {closer}
-            {!isLast && <span className="text-zinc-500">,</span>}
+            {!isLast && <span className="text-zinc-400 dark:text-zinc-500">,</span>}
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };
@@ -285,7 +285,7 @@ export const JsonTreeViewer: React.FC<JsonTreeViewerProps> = ({
   }
 
   return (
-    <div className="p-3 overflow-x-auto text-zinc-300 font-mono selection:bg-indigo-500/30 selection:text-white">
+    <div className="p-3 overflow-x-auto text-zinc-800 dark:text-zinc-300 font-mono selection:bg-indigo-500/30 selection:text-white">
       <TreeNode
         value={data}
         path="$"

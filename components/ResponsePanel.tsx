@@ -127,11 +127,11 @@ export const ResponsePanel: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-full bg-zinc-950/60 rounded-xl border border-zinc-800/80 overflow-hidden shadow-xl backdrop-blur-sm">
+    <div className="flex flex-col h-full bg-white dark:bg-zinc-950/60 rounded-xl border border-zinc-200 dark:border-zinc-800/80 overflow-hidden shadow-sm dark:shadow-xl backdrop-blur-sm transition-colors">
       {/* Response Header / Status Bar */}
-      <div className="p-3 bg-zinc-900/60 border-b border-zinc-800/80 flex flex-wrap items-center justify-between gap-2">
+      <div className="p-3 bg-zinc-50/90 dark:bg-zinc-900/60 border-b border-zinc-200 dark:border-zinc-800/80 flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2">
-          <span className="text-xs font-semibold text-zinc-300">Response</span>
+          <span className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">Response</span>
 
           {response && (
             <span
@@ -144,17 +144,17 @@ export const ResponsePanel: React.FC = () => {
           )}
 
           {response && (
-            <div className="flex items-center gap-3 text-xs text-zinc-400 ml-2">
+            <div className="flex items-center gap-3 text-xs text-zinc-500 dark:text-zinc-400 ml-2">
               <span className="flex items-center gap-1 font-mono" title="Response latency">
-                <Clock className="w-3.5 h-3.5 text-zinc-500" />
+                <Clock className="w-3.5 h-3.5 text-zinc-400 dark:text-zinc-500" />
                 {response.timeMs} ms
               </span>
               <span className="flex items-center gap-1 font-mono" title="Response payload size">
-                <HardDrive className="w-3.5 h-3.5 text-zinc-500" />
+                <HardDrive className="w-3.5 h-3.5 text-zinc-400 dark:text-zinc-500" />
                 {formatBytes(response.sizeBytes)}
               </span>
               {response.isProxy && (
-                <span className="flex items-center gap-1 text-[11px] text-violet-400 bg-violet-950/50 border border-violet-800/40 px-1.5 py-0.2 rounded">
+                <span className="flex items-center gap-1 text-[11px] text-violet-600 dark:text-violet-400 bg-violet-100 dark:bg-violet-950/50 border border-violet-200 dark:border-violet-800/40 px-1.5 py-0.2 rounded">
                   <ShieldCheck className="w-3 h-3" /> Proxy
                 </span>
               )}
@@ -165,13 +165,13 @@ export const ResponsePanel: React.FC = () => {
         {/* View Switcher & Actions */}
         {response && !response.error && (
           <div className="flex items-center gap-2">
-            <div className="flex items-center bg-zinc-900 border border-zinc-800 rounded-lg p-0.5 text-xs">
+            <div className="flex items-center bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg p-0.5 text-xs">
               <button
                 onClick={() => setResponseTab("tree")}
                 className={`px-2.5 py-1 rounded-md transition-colors flex items-center gap-1 ${
                   responseTab === "tree"
-                    ? "bg-zinc-800 text-white font-medium"
-                    : "text-zinc-400 hover:text-zinc-200"
+                    ? "bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white font-medium shadow-sm"
+                    : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200"
                 }`}
                 title="Interactive collapsible tree"
               >
@@ -182,8 +182,8 @@ export const ResponsePanel: React.FC = () => {
                 onClick={() => setResponseTab("raw")}
                 className={`px-2.5 py-1 rounded-md transition-colors flex items-center gap-1 ${
                   responseTab === "raw"
-                    ? "bg-zinc-800 text-white font-medium"
-                    : "text-zinc-400 hover:text-zinc-200"
+                    ? "bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white font-medium shadow-sm"
+                    : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200"
                 }`}
                 title="Formatted raw JSON"
               >
@@ -194,8 +194,8 @@ export const ResponsePanel: React.FC = () => {
                 onClick={() => setResponseTab("headers")}
                 className={`px-2.5 py-1 rounded-md transition-colors flex items-center gap-1 ${
                   responseTab === "headers"
-                    ? "bg-zinc-800 text-white font-medium"
-                    : "text-zinc-400 hover:text-zinc-200"
+                    ? "bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white font-medium shadow-sm"
+                    : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200"
                 }`}
                 title="Response headers table"
               >
@@ -206,13 +206,13 @@ export const ResponsePanel: React.FC = () => {
 
             <button
               onClick={handleCopy}
-              className="px-2.5 py-1.5 text-xs text-zinc-300 hover:text-white bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg flex items-center gap-1 transition-colors"
+              className="px-2.5 py-1.5 text-xs text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-900 dark:hover:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-lg flex items-center gap-1 transition-colors"
               title="Copy response body"
             >
               {copied ? (
                 <>
-                  <Check className="w-3.5 h-3.5 text-emerald-400" />
-                  <span className="text-emerald-400 text-[11px]">Copied!</span>
+                  <Check className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400" />
+                  <span className="text-emerald-600 dark:text-emerald-400 text-[11px]">Copied!</span>
                 </>
               ) : (
                 <>
@@ -224,7 +224,7 @@ export const ResponsePanel: React.FC = () => {
 
             <button
               onClick={handleDownload}
-              className="p-1.5 text-zinc-400 hover:text-white bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg transition-colors"
+              className="p-1.5 text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-900 dark:hover:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-lg transition-colors"
               title="Download as JSON file"
             >
               <Download className="w-3.5 h-3.5" />
@@ -235,20 +235,20 @@ export const ResponsePanel: React.FC = () => {
 
       {/* Query / Search Bar (When JSON response is present) */}
       {response && response.isJson && !response.error && (
-        <div className="flex items-center gap-2 px-3 py-1.5 bg-zinc-950/80 border-b border-zinc-800/60 text-xs">
+        <div className="flex items-center gap-2 px-3 py-1.5 bg-zinc-50/80 dark:bg-zinc-950/80 border-b border-zinc-200 dark:border-zinc-800/60 text-xs">
           <div className="relative flex-1 flex items-center">
-            <Search className="w-3.5 h-3.5 text-zinc-500 absolute left-2.5 pointer-events-none" />
+            <Search className="w-3.5 h-3.5 text-zinc-400 dark:text-zinc-500 absolute left-2.5 pointer-events-none" />
             <input
               type="text"
               value={queryFilter}
               onChange={(e) => setQueryFilter(e.target.value)}
               placeholder="Search keys/values or query path (e.g. $.posts[0].title or product.price)"
-              className="w-full bg-zinc-900/80 border border-zinc-800/80 rounded-md pl-8 pr-8 py-1 text-xs font-mono text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-indigo-500/60"
+              className="w-full bg-white dark:bg-zinc-900/80 border border-zinc-200 dark:border-zinc-800/80 rounded-md pl-8 pr-8 py-1 text-xs font-mono text-zinc-900 dark:text-zinc-200 placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:outline-none focus:border-indigo-500/60 transition-colors"
             />
             {queryFilter && (
               <button
                 onClick={() => setQueryFilter("")}
-                className="absolute right-2.5 text-zinc-500 hover:text-zinc-300 text-xs"
+                className="absolute right-2.5 text-zinc-400 hover:text-zinc-700 dark:text-zinc-500 dark:hover:text-zinc-300 text-xs"
               >
                 ✕
               </button>
@@ -256,7 +256,7 @@ export const ResponsePanel: React.FC = () => {
           </div>
 
           {queryFilter.trim() && (
-            <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-zinc-800 text-amber-300 border border-zinc-700">
+            <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-amber-50 dark:bg-zinc-800 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-zinc-700">
               {matchCount} {matchCount === 1 ? "match" : "matches"}
             </span>
           )}
@@ -264,7 +264,7 @@ export const ResponsePanel: React.FC = () => {
           {responseTab === "tree" && (
             <button
               onClick={() => setTreeExpandAll(!treeExpandAll)}
-              className="px-2 py-1 text-[11px] text-zinc-400 hover:text-zinc-200 bg-zinc-900 border border-zinc-800 rounded flex items-center gap-1 transition-colors"
+              className="px-2 py-1 text-[11px] text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-200 bg-white hover:bg-zinc-100 dark:bg-zinc-900 dark:hover:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded flex items-center gap-1 transition-colors"
               title={treeExpandAll ? "Collapse all nodes" : "Expand all nodes"}
             >
               {treeExpandAll ? (
@@ -287,38 +287,38 @@ export const ResponsePanel: React.FC = () => {
       <div className="flex-1 overflow-auto relative">
         {/* Loading State */}
         {isLoading && (
-          <div className="absolute inset-0 bg-zinc-950/80 backdrop-blur-sm flex flex-col items-center justify-center gap-3 z-20">
+          <div className="absolute inset-0 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-sm flex flex-col items-center justify-center gap-3 z-20">
             <div className="relative">
               <div className="w-10 h-10 rounded-full border-2 border-emerald-500/20 border-t-emerald-400 animate-spin" />
-              <RotateCw className="w-4 h-4 text-emerald-400 absolute inset-0 m-auto animate-pulse" />
+              <RotateCw className="w-4 h-4 text-emerald-500 dark:text-emerald-400 absolute inset-0 m-auto animate-pulse" />
             </div>
-            <p className="text-xs font-mono text-zinc-400">Fetching API response...</p>
+            <p className="text-xs font-mono text-zinc-600 dark:text-zinc-400">Fetching API response...</p>
           </div>
         )}
 
         {/* Error State */}
         {response?.error ? (
           <div className="p-6 flex flex-col items-center justify-center text-center max-w-lg mx-auto h-full space-y-4">
-            <div className="p-3 bg-rose-500/10 text-rose-400 rounded-full border border-rose-500/20">
+            <div className="p-3 bg-rose-500/10 text-rose-500 dark:text-rose-400 rounded-full border border-rose-500/20">
               <AlertTriangle className="w-8 h-8" />
             </div>
             <div className="space-y-1">
-              <h3 className="text-base font-semibold text-zinc-200">
+              <h3 className="text-base font-semibold text-zinc-800 dark:text-zinc-200">
                 {response.statusText || "Request Failed"}
               </h3>
-              <p className="text-xs text-rose-300 font-mono bg-rose-950/30 p-2.5 rounded-lg border border-rose-900/50 text-left">
+              <p className="text-xs text-rose-700 dark:text-rose-300 font-mono bg-rose-50 dark:bg-rose-950/30 p-2.5 rounded-lg border border-rose-200 dark:border-rose-900/50 text-left">
                 {response.error}
               </p>
             </div>
 
             {/* Smart CORS Suggestion */}
             {response.errorCategory === "cors" && (
-              <div className="p-3 bg-violet-950/40 border border-violet-800/40 rounded-lg text-left space-y-2 w-full">
-                <div className="flex items-center gap-1.5 text-xs font-semibold text-violet-300">
-                  <ShieldCheck className="w-4 h-4 text-violet-400" />
+              <div className="p-3 bg-violet-50 dark:bg-violet-950/40 border border-violet-200 dark:border-violet-800/40 rounded-lg text-left space-y-2 w-full">
+                <div className="flex items-center gap-1.5 text-xs font-semibold text-violet-700 dark:text-violet-300">
+                  <ShieldCheck className="w-4 h-4 text-violet-600 dark:text-violet-400" />
                   Bypass with Next.js Server Proxy
                 </div>
-                <p className="text-[11px] text-zinc-400">
+                <p className="text-[11px] text-zinc-600 dark:text-zinc-400">
                   The target API rejected the browser&apos;s origin header (CORS). We can dispatch this request through our Next.js backend proxy where origin restrictions do not apply.
                 </p>
                 <button
@@ -336,13 +336,13 @@ export const ResponsePanel: React.FC = () => {
           <div className="p-8 h-full flex flex-col items-center justify-center text-center max-w-md mx-auto space-y-5">
             <div className="relative">
               <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-indigo-500/20 to-emerald-500/20 border border-indigo-500/30 flex items-center justify-center">
-                <Terminal className="w-7 h-7 text-emerald-400" />
+                <Terminal className="w-7 h-7 text-emerald-500 dark:text-emerald-400" />
               </div>
-              <Sparkles className="w-4 h-4 text-amber-400 absolute -top-1 -right-1 animate-bounce" />
+              <Sparkles className="w-4 h-4 text-amber-500 dark:text-amber-400 absolute -top-1 -right-1 animate-bounce" />
             </div>
 
             <div className="space-y-1">
-              <h3 className="text-sm font-semibold text-zinc-200">
+              <h3 className="text-sm font-semibold text-zinc-800 dark:text-zinc-200">
                 Ready to test & explore APIs
               </h3>
               <p className="text-xs text-zinc-500 leading-relaxed">
@@ -358,24 +358,24 @@ export const ResponsePanel: React.FC = () => {
                     loadPreset(preset);
                     setTimeout(() => sendRequest(), 100);
                   }}
-                  className="w-full p-2.5 rounded-lg bg-zinc-900/60 hover:bg-zinc-800/80 border border-zinc-800/80 transition-all flex items-center justify-between group"
+                  className="w-full p-2.5 rounded-lg bg-zinc-50 hover:bg-zinc-100 dark:bg-zinc-900/60 dark:hover:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-800/80 transition-all flex items-center justify-between group"
                 >
                   <div className="flex items-center gap-2 truncate">
-                    <span className="font-mono text-[10px] font-bold text-emerald-400 px-1.5 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20">
+                    <span className="font-mono text-[10px] font-bold text-emerald-600 dark:text-emerald-400 px-1.5 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20">
                       {preset.method}
                     </span>
-                    <span className="text-xs text-zinc-300 font-medium group-hover:text-white transition-colors truncate">
+                    <span className="text-xs text-zinc-700 dark:text-zinc-300 font-medium group-hover:text-zinc-900 dark:group-hover:text-white transition-colors truncate">
                       {preset.name}
                     </span>
                   </div>
-                  <ArrowRight className="w-3.5 h-3.5 text-zinc-600 group-hover:text-emerald-400 transition-colors shrink-0" />
+                  <ArrowRight className="w-3.5 h-3.5 text-zinc-400 group-hover:text-emerald-600 dark:text-zinc-600 dark:group-hover:text-emerald-400 transition-colors shrink-0" />
                 </button>
               ))}
             </div>
 
             <div className="text-[11px] text-zinc-500 flex items-center gap-2">
               <span>Tip: Press</span>
-              <kbd className="px-1.5 py-0.5 rounded bg-zinc-900 border border-zinc-800 font-mono text-[10px] text-zinc-300">
+              <kbd className="px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 font-mono text-[10px] text-zinc-700 dark:text-zinc-300">
                 ⌘ / Ctrl + Enter
               </kbd>
               <span>to dispatch anytime</span>
@@ -393,11 +393,11 @@ export const ResponsePanel: React.FC = () => {
                   expandAll={treeExpandAll}
                 />
               ) : (
-                <div className="p-4 text-xs font-mono text-zinc-400">
-                  <div className="mb-2 p-2 bg-amber-500/10 text-amber-300 border border-amber-500/20 rounded">
+                <div className="p-4 text-xs font-mono text-zinc-600 dark:text-zinc-400">
+                  <div className="mb-2 p-2 bg-amber-500/10 text-amber-600 dark:text-amber-300 border border-amber-500/20 rounded">
                     Response is not valid JSON. Showing raw text below:
                   </div>
-                  <pre className="p-3 bg-zinc-900 rounded overflow-x-auto text-zinc-300">
+                  <pre className="p-3 bg-zinc-100 dark:bg-zinc-900 rounded overflow-x-auto text-zinc-800 dark:text-zinc-300">
                     {response.rawBody}
                   </pre>
                 </div>
@@ -407,7 +407,7 @@ export const ResponsePanel: React.FC = () => {
             {/* RAW JSON VIEW */}
             {responseTab === "raw" && (
               <div className="p-3 font-mono text-xs overflow-x-auto">
-                <pre className="text-zinc-300 selection:bg-indigo-500/30 selection:text-white">
+                <pre className="text-zinc-800 dark:text-zinc-300 selection:bg-indigo-500/30 selection:text-white">
                   {response.isJson
                     ? JSON.stringify(filteredData, null, 2)
                     : response.rawBody}
@@ -418,26 +418,26 @@ export const ResponsePanel: React.FC = () => {
             {/* HEADERS TABLE VIEW */}
             {responseTab === "headers" && (
               <div className="p-3">
-                <div className="border border-zinc-800 rounded-lg overflow-hidden">
+                <div className="border border-zinc-200 dark:border-zinc-800 rounded-lg overflow-hidden">
                   <table className="w-full text-left text-xs font-mono">
-                    <thead className="bg-zinc-900/90 text-zinc-400 border-b border-zinc-800">
+                    <thead className="bg-zinc-100 dark:bg-zinc-900/90 text-zinc-600 dark:text-zinc-400 border-b border-zinc-200 dark:border-zinc-800">
                       <tr>
                         <th className="px-3 py-2 font-semibold">Header Name</th>
                         <th className="px-3 py-2 font-semibold">Value</th>
                         <th className="px-3 py-2 w-10"></th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-zinc-800/60 bg-zinc-950/40">
+                    <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800/60 bg-white dark:bg-zinc-950/40">
                       {Object.entries(response.headers).map(([key, val]) => (
-                        <tr key={key} className="hover:bg-zinc-900/40 group">
-                          <td className="px-3 py-1.5 text-sky-300 font-medium whitespace-nowrap">
+                        <tr key={key} className="hover:bg-zinc-50 dark:hover:bg-zinc-900/40 group">
+                          <td className="px-3 py-1.5 text-sky-600 dark:text-sky-300 font-medium whitespace-nowrap">
                             {key}
                           </td>
-                          <td className="px-3 py-1.5 text-zinc-300 break-all">{val}</td>
+                          <td className="px-3 py-1.5 text-zinc-700 dark:text-zinc-300 break-all">{val}</td>
                           <td className="px-3 py-1.5 text-right">
                             <button
                               onClick={() => copyToClipboard(val)}
-                              className="text-zinc-600 hover:text-white opacity-0 group-hover:opacity-100 p-1"
+                              className="text-zinc-400 hover:text-zinc-800 dark:text-zinc-600 dark:hover:text-white opacity-0 group-hover:opacity-100 p-1"
                               title="Copy header value"
                             >
                               <Copy className="w-3 h-3" />

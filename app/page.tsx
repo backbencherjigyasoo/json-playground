@@ -38,7 +38,7 @@ export default function Home() {
   }, [sendRequest]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-zinc-950 text-zinc-100 selection:bg-indigo-500/30 selection:text-white transition-colors duration-200">
+    <div className="min-h-screen flex flex-col bg-slate-100/70 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 selection:bg-indigo-500/30 selection:text-white transition-colors duration-200">
       {/* Top Navigation */}
       <Navbar />
 

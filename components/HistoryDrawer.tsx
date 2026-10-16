@@ -88,13 +88,13 @@ export const HistoryDrawer: React.FC = () => {
       />
 
       <div className="fixed inset-y-0 right-0 max-w-full flex pl-10">
-        <div className="w-screen max-w-md bg-zinc-950 border-l border-zinc-800 shadow-2xl flex flex-col">
+        <div className="w-screen max-w-md bg-white dark:bg-zinc-950 border-l border-zinc-200 dark:border-zinc-800 shadow-2xl flex flex-col">
           {/* Header */}
-          <div className="p-4 border-b border-zinc-800/80 bg-zinc-900/60 flex items-center justify-between">
+          <div className="p-4 border-b border-zinc-200 dark:border-zinc-800/80 bg-zinc-50 dark:bg-zinc-900/60 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <History className="w-4 h-4 text-indigo-400" />
-              <h2 className="text-sm font-semibold text-white">Request History</h2>
-              <span className="text-xs px-2 py-0.2 rounded-full bg-zinc-800 text-zinc-400">
+              <History className="w-4 h-4 text-indigo-500 dark:text-indigo-400" />
+              <h2 className="text-sm font-semibold text-zinc-900 dark:text-white">Request History</h2>
+              <span className="text-xs px-2 py-0.2 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 font-medium">
                 {history.length}
               </span>
             </div>
@@ -102,14 +102,14 @@ export const HistoryDrawer: React.FC = () => {
             <div className="flex items-center gap-1">
               <button
                 onClick={handleExport}
-                className="p-1.5 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded transition-colors"
+                className="p-1.5 text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:text-white dark:hover:bg-zinc-800 rounded transition-colors"
                 title="Export history as JSON"
               >
                 <Download className="w-3.5 h-3.5" />
               </button>
               <button
                 onClick={() => fileInputRef.current?.click()}
-                className="p-1.5 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded transition-colors"
+                className="p-1.5 text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:text-white dark:hover:bg-zinc-800 rounded transition-colors"
                 title="Import history from JSON"
               >
                 <Upload className="w-3.5 h-3.5" />
@@ -128,7 +128,7 @@ export const HistoryDrawer: React.FC = () => {
                       clearHistory();
                     }
                   }}
-                  className="p-1.5 text-zinc-400 hover:text-rose-400 hover:bg-zinc-800 rounded transition-colors"
+                  className="p-1.5 text-zinc-500 hover:text-rose-500 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:text-rose-400 dark:hover:bg-zinc-800 rounded transition-colors"
                   title="Clear all history"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
@@ -136,7 +136,7 @@ export const HistoryDrawer: React.FC = () => {
               )}
               <button
                 onClick={() => setHistoryOpen(false)}
-                className="p-1.5 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded transition-colors ml-1"
+                className="p-1.5 text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:text-white dark:hover:bg-zinc-800 rounded transition-colors ml-1"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -144,15 +144,15 @@ export const HistoryDrawer: React.FC = () => {
           </div>
 
           {/* Search Filter */}
-          <div className="p-3 border-b border-zinc-800/60 bg-zinc-950/60">
+          <div className="p-3 border-b border-zinc-200 dark:border-zinc-800/60 bg-zinc-50/80 dark:bg-zinc-950/60">
             <div className="relative">
-              <Search className="w-3.5 h-3.5 text-zinc-500 absolute left-2.5 top-2.5" />
+              <Search className="w-3.5 h-3.5 text-zinc-400 dark:text-zinc-500 absolute left-2.5 top-2.5" />
               <input
                 type="text"
                 value={filterQuery}
                 onChange={(e) => setFilterQuery(e.target.value)}
                 placeholder="Filter by URL or method..."
-                className="w-full bg-zinc-900 border border-zinc-800 rounded-md pl-8 pr-3 py-1.5 text-xs text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-zinc-700"
+                className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-md pl-8 pr-3 py-1.5 text-xs text-zinc-900 dark:text-zinc-200 placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:outline-none focus:border-indigo-500"
               />
             </div>
           </div>
@@ -161,9 +161,9 @@ export const HistoryDrawer: React.FC = () => {
           <div className="flex-1 overflow-y-auto p-3 space-y-2">
             {filteredHistory.length === 0 ? (
               <div className="text-center py-12 text-zinc-500 space-y-2">
-                <FileJson className="w-8 h-8 mx-auto text-zinc-700" />
+                <FileJson className="w-8 h-8 mx-auto text-zinc-400 dark:text-zinc-700" />
                 <p className="text-xs">No matching requests found</p>
-                <p className="text-[11px] text-zinc-600">
+                <p className="text-[11px] text-zinc-400 dark:text-zinc-600">
                   Every request you send will be stored here locally.
                 </p>
               </div>
@@ -176,22 +176,22 @@ export const HistoryDrawer: React.FC = () => {
                   <div
                     key={item.id}
                     onClick={() => loadHistoryItem(item)}
-                    className="p-2.5 rounded-lg bg-zinc-900/60 hover:bg-zinc-800/80 border border-zinc-800/80 transition-all cursor-pointer group flex flex-col gap-1.5"
+                    className="p-2.5 rounded-lg bg-zinc-50 hover:bg-zinc-100 dark:bg-zinc-900/60 dark:hover:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-800/80 transition-all cursor-pointer group flex flex-col gap-1.5"
                   >
                     <div className="flex items-center justify-between gap-2">
                       <div className="flex items-center gap-1.5 truncate">
                         <span
                           className={`font-mono text-[10px] font-bold px-1.5 py-0.2 rounded border ${
                             item.request.method === "GET"
-                              ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                              ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20"
                               : item.request.method === "POST"
-                              ? "bg-amber-500/10 text-amber-400 border-amber-500/20"
-                              : "bg-sky-500/10 text-sky-400 border-sky-500/20"
+                              ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20"
+                              : "bg-sky-500/10 text-sky-600 dark:text-sky-400 border-sky-500/20"
                           }`}
                         >
                           {item.request.method}
                         </span>
-                        <span className="text-xs font-mono text-zinc-300 truncate">
+                        <span className="text-xs font-mono text-zinc-700 dark:text-zinc-300 truncate">
                           {item.request.url}
                         </span>
                       </div>
@@ -202,8 +202,8 @@ export const HistoryDrawer: React.FC = () => {
                             e.stopPropagation();
                             toggleStarHistory(item.id);
                           }}
-                          className={`p-1 rounded hover:bg-zinc-700 ${
-                            item.isStarred ? "text-amber-400" : "text-zinc-600 hover:text-zinc-400"
+                          className={`p-1 rounded hover:bg-zinc-200 dark:hover:bg-zinc-700 ${
+                            item.isStarred ? "text-amber-500 dark:text-amber-400" : "text-zinc-400 hover:text-zinc-600 dark:text-zinc-600 dark:hover:text-zinc-400"
                           }`}
                         >
                           <Star className="w-3 h-3 fill-current" />
@@ -213,19 +213,19 @@ export const HistoryDrawer: React.FC = () => {
                             e.stopPropagation();
                             deleteHistoryItem(item.id);
                           }}
-                          className="p-1 rounded text-zinc-600 hover:text-rose-400 hover:bg-zinc-700 opacity-0 group-hover:opacity-100 transition-opacity"
+                          className="p-1 rounded text-zinc-400 hover:text-rose-500 hover:bg-zinc-200 dark:text-zinc-600 dark:hover:text-rose-400 dark:hover:bg-zinc-700 opacity-0 group-hover:opacity-100 transition-opacity"
                         >
                           <Trash2 className="w-3 h-3" />
                         </button>
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-between text-[11px] text-zinc-500 pt-1 border-t border-zinc-800/40">
+                    <div className="flex items-center justify-between text-[11px] text-zinc-500 pt-1 border-t border-zinc-200 dark:border-zinc-800/40">
                       <div className="flex items-center gap-2">
                         {status ? (
                           <span
                             className={`font-mono text-[10px] ${
-                              isError ? "text-rose-400" : "text-emerald-400"
+                              isError ? "text-rose-600 dark:text-rose-400" : "text-emerald-600 dark:text-emerald-400"
                             }`}
                           >
                             {status}
